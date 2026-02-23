@@ -17,9 +17,15 @@ const private = require('../middlewares/private');
  */
 router.get('/:id', async (req, res) => {
     try {
-        const catway = await Catway.findById(req.params.id);
+        const catway = await Catway.findOne({ catwayNumber: req.params.id });
+        
+        if (!catway) {
+            return res.status(404).send('Catway inexistant dans la base');
+        }
+        
         res.render('catway_detail', { catway });
     } catch (error) {
+        console.error(error);
         res.status(500).send('Erreur lors de la récupération du catway');
     }
 });
@@ -32,7 +38,7 @@ router.get('/:id', async (req, res) => {
  * @param {Object} res - Objet de réponse Express pour la redirection.
  * @access Privé - Nécessite un jeton JWT valide.
  */
-router.post('/create', private.checkJWT, async (req, res) => {
+router.post('/', private.checkJWT, async (req, res) => {
     try {
         const { catwayNumber, type, catwayState } = req.body;
         const newCatway = new Catway({ catwayNumber, catwayType: type, catwayState });
