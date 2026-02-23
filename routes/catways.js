@@ -40,12 +40,19 @@ router.get('/:id', async (req, res) => {
  */
 router.post('/', private.checkJWT, async (req, res) => {
     try {
-        const { catwayNumber, type, catwayState } = req.body;
-        const newCatway = new Catway({ catwayNumber, catwayType: type, catwayState });
+        // On récupère exactement ce qui vient du formulaire (vérifie les attributs 'name')
+        const { catwayNumber, catwayType, catwayState } = req.body;
+        
+        const newCatway = new Catway({ 
+            catwayNumber, 
+            catwayType, // Assure-toi que c'est bien catwayType ici
+            catwayState 
+        });
+        
         await newCatway.save();
         res.redirect('/dashboard');
     } catch (error) {
-        console.error(error);
+        console.error(error); // C'est ce qui a affiché ton erreur en rouge
         res.status(500).send("Erreur lors de la création.");
     }
 });
