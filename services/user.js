@@ -1,0 +1,120 @@
+/**
+ * @file user.js
+ * @description Services de gestion des utilisateurs incluant le CRUD et l'authentification JWT.
+ */
+
+const User = require('../models/user');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const SECRET_KEY = process.env.SECRET_KEY || 'ma_cle_secrete_de_secours';
+
+/**
+ * Crée un nouvel utilisateur en hachant son mot de passe.
+ * @function add
+ * @param {Object} req - Objet de requête Express contenant les données utilisateur.
+ * @param {Object} res - Objet de réponse Express.
+ * @returns {void} Redirige vers la liste des utilisateurs.
+ */
+exports.add = async (req, res) => {
+    try {
+        const { name, firstname } = req.body;
+        const email = req.body.email.trim();
+        const password = req.body.password.trim();
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        await User.create({
+            name,
+            firstname,
+            email,
+            password: hashedPassword
+        });
+
+        return res.redirect('/users'); 
+    } catch (error) {
+        return res.status(501).json({ error: error.message });
+    }
+};
+
+/**
+ * Met à jour les informations d'un utilisateur existant.
+ * @function update
+ * @param {Object} req - Requête Express avec l'email en paramètre et les modifications en corps.
+ * @param {Object} res - Objet de réponse Express.
+ * @returns {void} Redirige vers la liste des utilisateurs.
+ */
+exports.update = async (req, res) => {
+    const emailParam = req.params.email; 
+    
+    try {
+        let user = await User.findOne({ email: emailParam });
+
+        if (!user) return res.status(404).send('User not found');
+
+        if (req.body.name) user.name = req.body.name;
+        if (req.body.firstname) user.firstname = req.body.firstname;
+        if (req.body.email) user.email = req.body.email;
+        
+        if (req.body.password && req.body.password.trim() !== "") {
+            user.password = await bcrypt.hash(req.body.password, 10);
+        }
+
+        await user.save();
+        return res.redirect('/users'); 
+    } catch (error) {
+        return res.status(501).json({ error: error.message });
+    }
+};
+
+/**
+ * Supprime un utilisateur de la base de données.
+ * @function delete
+ * @param {Object} req - Requête Express contenant l'email de l'utilisateur.
+ * @param {Object} res - Objet de réponse Express.
+ * @returns {void} Redirige vers la liste des utilisateurs.
+ */
+exports.delete = async (req, res) => {
+    try {
+        await User.deleteOne({ email: req.params.email });
+        return res.redirect('/users');
+    } catch (error) {
+        return res.status(501).json({ error: error.message });
+    }
+};
+
+/**
+ * Authentifie un utilisateur et génère un jeton JWT stocké dans un cookie.
+ * @function authenticate
+ * @param {Object} req - Requête Express contenant les identifiants de connexion.
+ * @param {Object} res - Objet de réponse Express.
+ * @returns {void} Redirige vers le dashboard en cas de succès.
+ */
+exports.authenticate = async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        let user = await User.findOne({ email: email });
+
+        if (user) {
+            const match = await bcrypt.compare(password, user.password);
+
+            if (match) {
+                const payload = { 
+                    user: { id: user._id, email: user.email, name: user.name } 
+                };
+
+                const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '24h' });
+
+                res.cookie('token', token, { httpOnly: true });
+
+                return res.redirect('/dashboard');
+            } else {
+                return res.status(403).send('Authenticate_failed');
+            }
+        } else {
+            return res.status(404).send('User not found');
+        }
+    } catch (error) {
+        return res.status(501).json({ error: error.message });
+    }
+};

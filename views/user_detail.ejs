@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Détails Utilisateur</title>
+</head>
+<body>
+    <h1>Modifier l'utilisateur : <%= user.name %></h1>
+    <a href="/users">← Retour à la liste</a>
+
+    <form action="/users/<%= encodeURIComponent(user.email) %>/update" method="POST">
+        <div>
+            <label>Nom :</label>
+            <input type="text" name="name" value="<%= user.name %>" required>
+        </div>
+        <div>
+            <label>Prénom :</label>
+            <input type="text" name="firstname" value="<%= user.firstname %>">
+        </div>
+        <div>
+            <label>Email (Identifiant) :</label>
+            <input type="email" name="email" value="<%= user.email %>" required>
+        </div>
+        <div>
+            <label>Nouveau mot de passe (laisser vide pour ne pas changer) :</label>
+            <input type="password" name="password">
+        </div>
+        <br>
+        <button type="submit">Enregistrer les modifications</button>
+    </form>
+
+    <hr>
+    <form action="/users/<%= encodeURIComponent(user.email) %>/delete" method="POST">
+        <button type="submit" onclick="return confirm('Supprimer définitivement ?')">Supprimer ce compte</button>
+    </form>
+</body>
+</html>

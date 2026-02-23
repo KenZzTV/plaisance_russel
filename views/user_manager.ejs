@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestion des Utilisateurs</title>
+</head>
+<body>
+    <h1>Gestion des Utilisateurs du Port</h1>
+    <a href="/dashboard">← Retour au Tableau de Bord</a>
+
+    <table border="1" style="margin-top: 20px; width: 100%; text-align: left;">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% users.forEach(user => { %>
+                <tr>
+                    <td><%= user.name %></td>
+                    <td><%= user.email %></td>
+                    <td>
+                        <a href="/users/<%= encodeURIComponent(user.email) %>">Détails/Modifier</a>
+                        
+                        <form action="/users/<%= encodeURIComponent(user.email) %>/delete" method="POST">
+                            <button type="submit" onclick="return confirm('Supprimer cet utilisateur ?')">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>Ajouter un nouvel utilisateur</h2>
+    <form action="/users" method="POST">
+        <input type="text" name="name" placeholder="Nom complet" required>
+        <input type="email" name="email" placeholder="Email (Identifiant)" required>
+        <input type="password" name="password" placeholder="Mot de passe" required>
+        <button type="submit">Créer le compte</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+  </head>
+  <body>
+    <h1>Port de Plaisance Russell</h1>
+    <p>Bienvenue sur l'application de gestion des catways et réservations.</p>
+
+    <h2>Connexion à la Capitainerie</h2>
+      <form action="/login" method="POST"> <div>
+          <label>Email :</label>
+          <input type="email" name="email" required>
+        </div>
+        <div>
+          <label>Mot de passe :</label>
+          <input type="password" name="password" required>
+        </div>
+        <button type="submit">Se connecter</button>
+      </form>
+      <a href="/infos">Documentation API</a>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>Documentation de l'API Port Russell</h1>
+    <p>Voici la liste des points d'accès (endpoints) disponibles :</p>
+
+    <h3>Utilisateurs</h3>
+    <ul>
+        <li><strong>GET /users</strong> : Liste tous les utilisateurs</li>
+        <li><strong>POST /users</strong> : Créer un utilisateur</li>
+        <li><strong>DELETE /users/:id</strong> : Supprimer un utilisateur</li>
+    </ul>
+
+    <h3>Catways</h3>
+    <ul>
+        <li><strong>GET /catways</strong> : Liste tous les catways</li>
+        <li><strong>GET /catways/:id</strong> : Détails d'un catway</li>
+        <li><strong>POST /catways</strong> : Créer un catway</li>
+    </ul>
+
+    <h3>Réservations</h3>
+    <ul>
+        <li><strong>GET /reservations</strong> : Liste globale des réservations</li>
+        <li><strong>POST /reservations</strong> : Créer une réservation</li>
+    </ul>
+
+    <a href="/dashboard">Retour au Tableau de Bord</a>
+    </body>
+</html>

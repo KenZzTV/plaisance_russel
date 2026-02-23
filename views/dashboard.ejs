@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+</head>
+<body>
+    <header>
+        <h1>Tableau de Bord - Port Russell</h1>
+        <div class="user-info">
+            <p><strong>Utilisateur connecté :</strong> <%= user.name %> (<%= user.email %>)</p>
+            <p><strong>Date du jour :</strong> <%= new Date().toLocaleDateString('fr-FR') %></p>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="/catways">Gestion des Catways</a></li>
+            <li><a href="/reservations">Gestion des Réservations</a></li>
+            <li><a href="/users">Gestion des Utilisateurs</a></li>
+            <li><a href="/infos">Documentation API</a></li>
+            <li><a href="/logout">Se déconnecter</a></li>
+        </ul>
+    </nav>
+</body>
+</html>

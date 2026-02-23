@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestion des Catways</title>
+</head>
+<body>
+    <header>
+        <h1>Gestion des Catways (CRUD)</h1>
+        <p>Utilisateur : <%= user.name %> (<%= user.email %>)</p>
+        <a href="/dashboard">← Retour au tableau de bord</a>
+    </header>
+
+    <main>
+        <section>
+            <h2>Ajouter un nouveau Catway</h2>
+            <form action="/catways" method="POST">
+                <input type="number" name="catwayNumber" placeholder="Numéro" required>
+                <select name="catwayType">
+                    <option value="long">Long</option>
+                    <option value="short">Short</option>
+                </select>
+                <input type="text" name="catwayState" placeholder="État du catway" required>
+                <button type="submit">Créer le Catway</button>
+            </form>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>Liste des Catways du Port</h2>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Type</th>
+                        <th>État</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% catways.forEach(c => { %>
+                        <tr>
+                            <td><%= c.catwayNumber %></td>
+                            <td><%= c.catwayType %></td>
+                            <td><%= c.catwayState %></td>
+                            <td>
+                                <a href="/catways/<%= c.catwayNumber %>">Modifier / Détails</a>
+                                
+                                <form action="/catways/<%= c.catwayNumber %>/delete" method="POST">
+                                    <button type="submit" onclick="return confirm('Supprimer ce catway ?')">Supprimer</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

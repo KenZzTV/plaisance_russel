@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Gestion des Réservations</title>
+</head>
+<body>
+    <header>
+        <h1>Gestion des Réservations (CRUD)</h1>
+        <p>Utilisateur connecté : <%= user.name %> (<%= user.email %>)</p>
+        <a href="/dashboard">← Retour au tableau de bord</a>
+    </header>
+    <main>
+        <section>
+            <h2>Ajouter une nouvelle réservation</h2>
+            <form action="/reservations" method="POST">
+                <input type="number" name="catwayNumber" placeholder="N° Catway" required>
+                <input type="text" name="clientName" placeholder="Nom du client" required>
+                <input type="text" name="boatName" placeholder="Nom du bateau" required>
+                <label>Début :</label>
+                <input type="date" name="startDate" required>
+                <label>Fin :</label>
+                <input type="date" name="endDate" required>
+                <button type="submit">Créer la réservation</button>
+            </form>
+        </section>
+        <section>
+            <h2>Liste des réservations</h2>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Catway</th>
+                        <th>Client</th>
+                        <th>Bateau</th>
+                        <th>Début</th>
+                        <th>Fin</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% reservations.forEach(resa => { %>
+                        <tr>
+                            <td><%= resa.catwayNumber %></td>
+                            <td><%= resa.clientName %></td>
+                            <td><%= resa.boatName %></td>
+                            <td><%= new Date(resa.startDate).toLocaleDateString('fr-FR') %></td>
+                            <td><%= new Date(resa.endDate).toLocaleDateString('fr-FR') %></td>
+                            <td>
+                                <a href="/catways/<%= resa.catwayNumber %>/reservations/<%= resa._id %>">Détails</a>
+                                
+                                <form action="/reservations/<%= resa._id %>/delete" method="POST">
+                                    <button type="submit" onclick="return confirm('Supprimer cette réservation ?')">
+                                        Supprimer
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </section>
+    </main>
+</body>
+</html>
