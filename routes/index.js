@@ -84,7 +84,7 @@ router.get('/infos', (req, res) => {
 router.get('/catways', private.checkJWT, async (req, res) => {
     try {
         const catwaysList = await Catway.find();
-        res.render('catway_detail', { 
+        res.render('catway', { 
             title: 'Gestion des Catways',
             user: req.user,
             catways: catwaysList,

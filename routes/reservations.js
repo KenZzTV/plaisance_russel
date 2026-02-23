@@ -57,16 +57,21 @@ router.get('/:idReservation', private.checkJWT, async (req, res) => {
  * @param {Object} res - Objet de réponse Express pour la redirection.
  * @access Privé
  */
-router.post('/', private.checkJWT, async (req, res) => {
+router.post('/:idReservation', private.checkJWT, async (req, res) => {
     try {
-        const newRes = new Reservation({
-            catwayNumber: req.params.id,
-            ...req.body 
+        const { checkIn, checkOut, clientName, boatName } = req.body;
+        
+        await Reservation.findByIdAndUpdate(req.params.idReservation, {
+            checkIn,
+            checkOut,
+            clientName,
+            boatName
         });
-        await newRes.save();
-        res.redirect(`/catways/${req.params.id}/reservations`);
+
+        // Après la modif, on redirige vers la liste des réservations du catway
+        res.redirect('/reservations');
     } catch (error) {
-        res.status(400).send("Erreur création");
+        res.status(500).send("Erreur lors de la modification de la réservation");
     }
 });
 

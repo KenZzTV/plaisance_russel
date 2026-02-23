@@ -1,100 +1,55 @@
-/**
- * @file catways.js
- * @description Routes Express pour la gestion des catways (CRUD).
- */
-
 const express = require('express');
 const router = express.Router();
 const Catway = require('../models/catways');
 const private = require('../middlewares/private');
 
-/**
- * Récupère et affiche les détails d'un catway spécifique.
- * @name GET /catways/:id
- * @function
- * @param {Object} req - Objet de requête Express contenant l'ID du catway.
- * @param {Object} res - Objet de réponse Express pour le rendu de la vue.
- */
-router.get('/:id', async (req, res) => {
-    try {
-        const catway = await Catway.findOne({ catwayNumber: req.params.id });
-        
-        if (!catway) {
-            return res.status(404).send('Catway inexistant dans la base');
-        }
-        
-        res.render('catway_detail', { catway });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Erreur lors de la récupération du catway');
-    }
-});
-
-/**
- * Crée un nouveau catway dans la base de données.
- * @name POST /catways/create
- * @function
- * @param {Object} req - Objet de requête Express contenant les données du nouveau catway.
- * @param {Object} res - Objet de réponse Express pour la redirection.
- * @access Privé - Nécessite un jeton JWT valide.
- */
+// ROUTE 1 : LA LISTE (URL: /catways)
+// Change '/' par '/liste-test' juste pour voir
 router.post('/', private.checkJWT, async (req, res) => {
     try {
-        // On récupère exactement ce qui vient du formulaire (vérifie les attributs 'name')
         const { catwayNumber, catwayType, catwayState } = req.body;
-        
-        const newCatway = new Catway({ 
-            catwayNumber, 
-            catwayType, // Assure-toi que c'est bien catwayType ici
-            catwayState 
-        });
-        
+        const newCatway = new Catway({ catwayNumber, catwayType, catwayState });
         await newCatway.save();
-        res.redirect('/dashboard');
+        res.redirect('/catways'); // Redirige vers la liste après succès
     } catch (error) {
-        console.error(error); // C'est ce qui a affiché ton erreur en rouge
-        res.status(500).send("Erreur lors de la création.");
+        res.status(500).send("Erreur lors de la création");
+    }
+});
+// ROUTE 2 : LE DÉTAIL (URL: /catways/:id)
+// IMPORTANT : Cette route doit impérativement être APRES la route '/'
+router.get('/:id', private.checkJWT, async (req, res) => {
+    try {
+        const catway = await Catway.findOne({ catwayNumber: req.params.id });
+        if (!catway) return res.status(404).send('Catway non trouvé');
+        
+        // Affiche le FORMULAIRE DE MODIFICATION
+        res.render('catway_detail', { catway: catway, user: req.user });
+    } catch (error) {
+        res.status(500).send('Erreur détail');
     }
 });
 
-/**
- * Met à jour l'état d'un catway existant.
- * @name POST /catways/:id
- * @function
- * @param {Object} req - Objet de requête Express contenant l'ID et le nouvel état.
- * @param {Object} res - Objet de réponse Express pour la redirection.
- * @access Privé - Nécessite un jeton JWT valide.
- */
-/**
- * Met à jour l'état d'un catway (Uniquement l'état est modifiable).
- * @route POST /catways/:id
- * @access Privé
- */
+// ROUTE 3 : L'ENREGISTREMENT (POST)
 router.post('/:id', private.checkJWT, async (req, res) => {
     try {
-        const { catwayState } = req.body;
-        
-        // On cherche par le numéro de catway (catwayNumber) et on met à jour l'état
-        const updated = await Catway.findOneAndUpdate(
+        await Catway.findOneAndUpdate(
             { catwayNumber: req.params.id }, 
-            { catwayState: catwayState },
-            { new: true }
+            { catwayState: req.body.catwayState }
         );
-
-        if (!updated) return res.status(404).send('Catway non trouvé');
-        
-        res.redirect('/dashboard'); // Redirection vers le tableau de bord après modif
+        res.redirect('/catways'); 
     } catch (error) {
-        res.status(500).send('Erreur lors de la mise à jour');
+        res.status(500).send('Erreur update');
     }
 });
 
+// routes/catways.js
+
 /**
- * Supprime un catway.
  * @route POST /catways/:id/delete
  */
 router.post('/:id/delete', private.checkJWT, async (req, res) => {
     try {
+        // On cherche par le numéro (catwayNumber) qui est passé dans l'URL (:id)
         await Catway.findOneAndDelete({ catwayNumber: req.params.id });
         res.redirect('/catways');
     } catch (error) {

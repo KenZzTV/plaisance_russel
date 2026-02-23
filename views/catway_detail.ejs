@@ -1,60 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <title>Gestion des Catways</title>
+    <meta charset="UTF-8">
+    <title>Détails Catway <%= catway.catwayNumber %></title>
 </head>
 <body>
-    <header>
-        <h1>Gestion des Catways (CRUD)</h1>
-        <p>Utilisateur : <%= user.name %> (<%= user.email %>)</p>
-        <a href="/dashboard">← Retour au tableau de bord</a>
-    </header>
+    <div class="card">
+        <h2>Catway n°<%= catway.catwayNumber %></h2>
+        
+        <div class="info">
+            <p><strong>Type :</strong> <%= catway.catwayType %></p>
+            <p><strong>Identifiant unique :</strong> <%= catway._id %></p>
+        </div>
 
-    <main>
-        <section>
-            <h2>Ajouter un nouveau Catway</h2>
-            <form action="/catways" method="POST">
-                <input type="number" name="catwayNumber" placeholder="Numéro" required>
-                <select name="catwayType">
-                    <option value="long">Long</option>
-                    <option value="short">Short</option>
-                </select>
-                <input type="text" name="catwayState" placeholder="État du catway" required>
-                <button type="submit">Créer le Catway</button>
-            </form>
-        </section>
+        <form action="/catways/<%= catway.catwayNumber %>" method="POST">
+            <label for="catwayState"><strong>Modifier l'état :</strong></label>
+            <input type="text" id="catwayState" name="catwayState" value="<%= catway.catwayState %>" required>
+            <button type="submit" class="btn-save">Enregistrer les modifications</button>
+        </form>
 
-        <hr>
-
-        <section>
-            <h2>Liste des Catways du Port</h2>
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>N°</th>
-                        <th>Type</th>
-                        <th>État</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% catways.forEach(c => { %>
-                        <tr>
-                            <td><%= c.catwayNumber %></td>
-                            <td><%= c.catwayType %></td>
-                            <td><%= c.catwayState %></td>
-                            <td>
-                                <a href="/catways/<%= c.catwayNumber %>">Modifier / Détails</a>
-                                
-                                <form action="/catways/<%= c.catwayNumber %>/delete" method="POST">
-                                    <button type="submit" onclick="return confirm('Supprimer ce catway ?')">Supprimer</button>
-                                </form>
-                            </td>
-                        </tr>
-                    <% }); %>
-                </tbody>
-            </table>
-        </section>
-    </main>
+        <a href="/catways" class="back-link">← Retour à la liste</a>
+    </div>
 </body>
 </html>
