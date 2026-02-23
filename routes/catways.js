@@ -52,30 +52,40 @@ router.post('/create', private.checkJWT, async (req, res) => {
  * @param {Object} res - Objet de réponse Express pour la redirection.
  * @access Privé - Nécessite un jeton JWT valide.
  */
+/**
+ * Met à jour l'état d'un catway (Uniquement l'état est modifiable).
+ * @route POST /catways/:id
+ * @access Privé
+ */
 router.post('/:id', private.checkJWT, async (req, res) => {
     try {
         const { catwayState } = req.body;
-        await Catway.findByIdAndUpdate(req.params.id, { catwayState: catwayState });
-        res.redirect('/dashboard');
+        
+        // On cherche par le numéro de catway (catwayNumber) et on met à jour l'état
+        const updated = await Catway.findOneAndUpdate(
+            { catwayNumber: req.params.id }, 
+            { catwayState: catwayState },
+            { new: true }
+        );
+
+        if (!updated) return res.status(404).send('Catway non trouvé');
+        
+        res.redirect('/dashboard'); // Redirection vers le tableau de bord après modif
     } catch (error) {
-        res.status(500).send('Erreur lors de la mise à jour du catway');
+        res.status(500).send('Erreur lors de la mise à jour');
     }
 });
 
 /**
- * Supprime un catway de la base de données.
- * @name POST /catways/:id/delete
- * @function
- * @param {Object} req - Objet de requête Express contenant l'ID du catway à supprimer.
- * @param {Object} res - Objet de réponse Express pour la redirection.
- * @access Privé - Nécessite un jeton JWT valide.
+ * Supprime un catway.
+ * @route POST /catways/:id/delete
  */
 router.post('/:id/delete', private.checkJWT, async (req, res) => {
     try {
-        await Catway.findByIdAndDelete(req.params.id);
+        await Catway.findOneAndDelete({ catwayNumber: req.params.id });
         res.redirect('/dashboard');
     } catch (error) {
-        res.status(500).send('Erreur lors de la suppression du catway');
+        res.status(500).send('Erreur lors de la suppression');
     }
 });
 
