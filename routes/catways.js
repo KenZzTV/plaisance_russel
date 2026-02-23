@@ -83,7 +83,7 @@ router.post('/:id', private.checkJWT, async (req, res) => {
 router.post('/:id/delete', private.checkJWT, async (req, res) => {
     try {
         await Catway.findOneAndDelete({ catwayNumber: req.params.id });
-        res.redirect('/dashboard');
+        res.redirect('/catways');
     } catch (error) {
         res.status(500).send('Erreur lors de la suppression');
     }
